@@ -172,6 +172,30 @@ class BinaryRandom(Optimizer):
         return w_coords_2d
 
 
+class ConvNet(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self._layers = nn.Sequential(
+            nn.Conv2d(1, 16, 3, padding=1),
+            nn.BatchNorm2d(16, affine=False),
+            nn.Tanh(),
+            nn.MaxPool2d(2, 2),
+            nn.Conv2d(16, 32, 3, padding=1),
+            nn.BatchNorm2d(32, affine=False),
+            nn.Tanh(),
+            nn.MaxPool2d(2, 2),
+            nn.Flatten(),
+            nn.Linear(32 * 7 * 7, 128),
+            nn.BatchNorm1d(128, affine=False),
+            nn.Tanh(),
+            nn.Linear(128, 10),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = x.view(x.size(0), 1, 28, 28)
+        return self._layers(x)
+
+
 class FullyConnected(nn.Module):
     def __init__(self, net_cfg: NetConfig) -> None:
         super().__init__()
@@ -261,7 +285,7 @@ def main() -> None:
     data_module = MnistModule(
         batch_size=learning_config.batch_size, num_workers=learning_config.num_workers
     )
-    model = FullyConnected(net_config)
+    model = ConvNet()
     l_module = MnistQRandomClsModule(model, learning_config)
     trainer = L.Trainer(
         max_epochs=10000,
