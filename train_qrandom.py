@@ -176,16 +176,16 @@ class ConvNet(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self._layers = nn.Sequential(
-            nn.Conv2d(1, 16, 3, padding=1),
-            nn.BatchNorm2d(16, affine=False),
-            nn.Tanh(),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(16, 32, 3, padding=1),
+            nn.Conv2d(1, 32, 3, padding=1),
             nn.BatchNorm2d(32, affine=False),
             nn.Tanh(),
             nn.MaxPool2d(2, 2),
+            nn.Conv2d(32, 64, 3, padding=1),
+            nn.BatchNorm2d(64, affine=False),
+            nn.Tanh(),
+            nn.MaxPool2d(2, 2),
             nn.Flatten(),
-            nn.Linear(32 * 7 * 7, 128),
+            nn.Linear(64 * 7 * 7, 128),
             nn.BatchNorm1d(128, affine=False),
             nn.Tanh(),
             nn.Linear(128, 10),
