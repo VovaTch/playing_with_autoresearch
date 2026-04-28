@@ -136,7 +136,7 @@ class BinaryRandom(Optimizer):
 
                 d_p = p.grad.data
 
-                top_k_p = int(group["lr"] * p.data.numel())
+                top_k_p = max(1, int(group["lr"] * p.data.numel()))
 
                 weights_sign = torch.sign(p.data)
                 update_direction = torch.sign(d_p)
