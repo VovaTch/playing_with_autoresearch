@@ -17,7 +17,7 @@ from prepare_qrandom import MnistModule, percent_correct
 @dataclass
 class NetConfig:
     num_layers: int = 5
-    hidden_dim: int = 128
+    hidden_dim: int = 256
     use_activations: bool = True
 
 
