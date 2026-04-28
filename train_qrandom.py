@@ -164,7 +164,7 @@ class BinaryRandom(Optimizer):
             w_coords_2d[w_coords_2d > 0] = (
                 (w_coords_2d[w_coords_2d > 0] - min_positive_w_coords)
                 / (max_w_coords - min_positive_w_coords)
-                * 0.5
+                * 1.0
             )
             w_coords_2d[w_coords_2d <= 0] = min_prob
         except Exception as e:
