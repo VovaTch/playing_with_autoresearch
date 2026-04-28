@@ -135,6 +135,12 @@ class BinaryRandom(Optimizer):
                     continue
 
                 d_p = p.grad.data
+                state = self.state[p]
+                if 'momentum_buf' not in state:
+                    state['momentum_buf'] = d_p.clone()
+                else:
+                    state['momentum_buf'].mul_(0.9).add_(d_p, alpha=0.1)
+                d_p = state['momentum_buf']
 
                 top_k_p = max(1, int(group["lr"] * p.data.numel()))
 
