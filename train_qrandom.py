@@ -18,7 +18,7 @@ from prepare_qrandom import MnistModule, percent_correct
 class NetConfig:
     num_layers: int = 5
     hidden_dim: int = 32
-    use_activations: bool = False
+    use_activations: bool = True
 
 
 @dataclass
@@ -185,11 +185,13 @@ class FullyConnected(nn.Module):
 
         layers.append(nn.Linear(784, self._net_cfg.hidden_dim))
         if net_cfg.use_activations:
-            layers.append(nn.ReLU())
+            layers.append(nn.BatchNorm1d(self._net_cfg.hidden_dim, affine=False))
+            layers.append(nn.Tanh())
         for _ in range(net_cfg.num_layers - 2):
             layers.append(nn.Linear(self._net_cfg.hidden_dim, self._net_cfg.hidden_dim))
             if net_cfg.use_activations:
-                self._layers.append(nn.ReLU())
+                layers.append(nn.BatchNorm1d(self._net_cfg.hidden_dim, affine=False))
+                layers.append(nn.Tanh())
         layers.append(nn.Linear(self._net_cfg.hidden_dim, 10))
         self._layers = nn.Sequential(*layers)
 
