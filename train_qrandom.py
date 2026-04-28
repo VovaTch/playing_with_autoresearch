@@ -191,6 +191,9 @@ class ConvNet(nn.Module):
             nn.Linear(64 * 7 * 7, 256),
             nn.BatchNorm1d(256, affine=False),
             nn.Tanh(),
+            nn.Linear(256, 256),
+            nn.BatchNorm1d(256, affine=False),
+            nn.Tanh(),
             nn.Linear(256, 10),
         )
 
