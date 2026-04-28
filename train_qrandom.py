@@ -188,10 +188,10 @@ class ConvNet(nn.Module):
             nn.BatchNorm2d(64, affine=False),
             nn.Tanh(),
             nn.Flatten(),
-            nn.Linear(64 * 7 * 7, 128),
-            nn.BatchNorm1d(128, affine=False),
+            nn.Linear(64 * 7 * 7, 256),
+            nn.BatchNorm1d(256, affine=False),
             nn.Tanh(),
-            nn.Linear(128, 10),
+            nn.Linear(256, 10),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
