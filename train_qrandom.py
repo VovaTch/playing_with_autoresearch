@@ -264,7 +264,10 @@ def main() -> None:
     model = FullyConnected(net_config)
     l_module = MnistQRandomClsModule(model, learning_config)
     trainer = L.Trainer(
-        max_epochs=learning_config.epochs, strategy="ddp", log_every_n_steps=5
+        max_epochs=10000,
+        max_time="00:00:05:00",
+        strategy="ddp",
+        log_every_n_steps=5,
     )
     trainer.fit(l_module, data_module)
     results = trainer.test(l_module, data_module)
