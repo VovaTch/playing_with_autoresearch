@@ -59,6 +59,58 @@ class MnistModule(L.LightningDataModule):
         )
 
 
+class Cifar100Module(L.LightningDataModule):
+    def __init__(
+        self,
+        batch_size: int = 128,
+        path: str = os.path.join("data", "cifar100"),
+        num_workers: int = 0,
+    ) -> None:
+        super().__init__()
+        transforms = T.Compose(
+            [
+                T.ToTensor(),
+                T.Normalize((0.5071, 0.4867, 0.4408), (0.2673, 0.2564, 0.2762)),
+            ]
+        )
+        self._train_data = datasets.CIFAR100(
+            root=path,
+            train=True,
+            download=True,
+            transform=transforms,
+        )
+        self._eval_data = datasets.CIFAR100(
+            root=path, train=False, download=True, transform=transforms
+        )
+        self._test_data = self._eval_data
+        self._batch_size = batch_size
+        self._num_workers = num_workers
+
+    def train_dataloader(self) -> TRAIN_DATALOADERS:
+        return torch.utils.data.DataLoader(
+            self._train_data,
+            batch_size=self._batch_size,
+            shuffle=True,
+            num_workers=self._num_workers,
+        )
+
+    def val_dataloader(self) -> EVAL_DATALOADERS:
+        return torch.utils.data.DataLoader(
+            self._eval_data,
+            batch_size=self._batch_size,
+            shuffle=False,
+            num_workers=self._num_workers,
+        )
+
+    def test_dataloader(self) -> EVAL_DATALOADERS:
+        return torch.utils.data.DataLoader(
+            self._eval_data,
+            batch_size=self._batch_size,
+            shuffle=False,
+            num_workers=self._num_workers,
+        )
+
+
 @torch.no_grad
 def percent_correct(logits: torch.Tensor, targets: torch.Tensor) -> float:
     assert logits.size(0) == targets.size(

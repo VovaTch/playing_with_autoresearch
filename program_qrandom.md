@@ -77,7 +77,7 @@ commit val_bpb memory_gb status description
 Example:
 
 ```
-commit val_bpb memory_gb status description
+commit percent_correct memory_gb status description
 a1b2c3d 0.997900 44.0 keep baseline
 b2c3d4e 0.993200 44.2 keep increase LR to 0.04
 c3d4e5f 1.005000 44.0 discard switch to GeLU activation

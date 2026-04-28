@@ -11,7 +11,7 @@ from lightning.pytorch.utilities.types import (
     OptimizerLRScheduler,
 )
 
-from prepare_qrandom import MnistModule, percent_correct
+from prepare_qrandom import Cifar100Module, MnistModule, percent_correct
 
 
 @dataclass
@@ -136,11 +136,11 @@ class BinaryRandom(Optimizer):
 
                 d_p = p.grad.data
                 state = self.state[p]
-                if 'momentum_buf' not in state:
-                    state['momentum_buf'] = d_p.clone()
+                if "momentum_buf" not in state:
+                    state["momentum_buf"] = d_p.clone()
                 else:
-                    state['momentum_buf'].mul_(0.9).add_(d_p, alpha=0.1)
-                d_p = state['momentum_buf']
+                    state["momentum_buf"].mul_(0.9).add_(d_p, alpha=0.1)
+                d_p = state["momentum_buf"]
 
                 top_k_p = max(1, int(group["lr"] * p.data.numel()))
 
@@ -182,29 +182,28 @@ class ConvNet(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self._layers = nn.Sequential(
-            nn.Conv2d(1, 32, 3, padding=1),
+            nn.Conv2d(3, 32, 3, padding=1),  # 32
             nn.BatchNorm2d(32, affine=False),
             nn.Tanh(),
-            nn.MaxPool2d(2, 2),
+            nn.MaxPool2d(2, 2),  # 16
             nn.Conv2d(32, 64, 3, padding=1),
             nn.BatchNorm2d(64, affine=False),
             nn.Tanh(),
-            nn.MaxPool2d(2, 2),
+            nn.MaxPool2d(2, 2),  # 8
             nn.Conv2d(64, 64, 3, padding=1),
             nn.BatchNorm2d(64, affine=False),
             nn.Tanh(),
             nn.Flatten(),
-            nn.Linear(64 * 7 * 7, 256),
+            nn.Linear(64 * 8 * 8, 256),
             nn.BatchNorm1d(256, affine=False),
             nn.Tanh(),
             nn.Linear(256, 256),
             nn.BatchNorm1d(256, affine=False),
             nn.Tanh(),
-            nn.Linear(256, 10),
+            nn.Linear(256, 100),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = x.view(x.size(0), 1, 28, 28)
         return self._layers(x)
 
 
@@ -235,7 +234,7 @@ class FullyConnected(nn.Module):
         return self._layers(x)
 
 
-class MnistQRandomClsModule(L.LightningModule):
+class QRandomClsModule(L.LightningModule):
     def __init__(self, model: nn.Module, learning_config: LearningConfig) -> None:
         super().__init__()
         self._model = model
@@ -276,7 +275,7 @@ class MnistQRandomClsModule(L.LightningModule):
         batch: tuple[torch.Tensor, torch.Tensor],
         step_type: Literal["train", "val", "test"],
     ) -> STEP_OUTPUT:
-        inputs, targets = batch[0].flatten(start_dim=1), batch[1]
+        inputs, targets = batch[0], batch[1]
         outputs = self.forward({"inputs": inputs})
 
         criterion = nn.CrossEntropyLoss()
@@ -294,11 +293,11 @@ class MnistQRandomClsModule(L.LightningModule):
 def main() -> None:
     learning_config = LearningConfig()
     net_config = NetConfig()
-    data_module = MnistModule(
+    data_module = Cifar100Module(
         batch_size=learning_config.batch_size, num_workers=learning_config.num_workers
     )
     model = ConvNet()
-    l_module = MnistQRandomClsModule(model, learning_config)
+    l_module = QRandomClsModule(model, learning_config)
     trainer = L.Trainer(
         max_epochs=10000,
         max_time="00:00:05:00",
