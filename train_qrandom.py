@@ -27,7 +27,7 @@ class LearningConfig:
     epochs: int = 50
     batch_size: int = 1024
     flip_factor: float = 0.1
-    min_prob: float = 1e-4
+    min_prob: float = 0.0
     reroll_weights: bool = False
     num_workers: int = 11
 
