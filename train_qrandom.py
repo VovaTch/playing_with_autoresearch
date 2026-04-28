@@ -25,7 +25,7 @@ class NetConfig:
 class LearningConfig:
     learning_rate: float = 1e-3
     epochs: int = 50
-    batch_size: int = 1024
+    batch_size: int = 4096
     flip_factor: float = 0.1
     min_prob: float = 0.0
     reroll_weights: bool = False
