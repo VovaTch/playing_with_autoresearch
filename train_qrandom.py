@@ -23,7 +23,7 @@ class NetConfig:
 
 @dataclass
 class LearningConfig:
-    learning_rate: float = 2e-3
+    learning_rate: float = 4e-3
     epochs: int = 50
     batch_size: int = 1024
     flip_factor: float = 0.1
