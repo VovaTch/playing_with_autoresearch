@@ -192,6 +192,9 @@ class ConvNet(nn.Module):
             nn.Conv2d(32, 96, 3, padding=1),
             nn.BatchNorm2d(96, affine=False),
             nn.Tanh(),
+            nn.Conv2d(96, 96, 3, padding=1),
+            nn.BatchNorm2d(96, affine=False),
+            nn.Tanh(),
             nn.MaxPool2d(2, 2),  # 8
             nn.Conv2d(96, 128, 3, padding=1),
             nn.BatchNorm2d(128, affine=False),
