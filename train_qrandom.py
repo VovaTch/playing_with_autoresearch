@@ -184,38 +184,38 @@ class ConvNet(nn.Module):
         self._layers = nn.Sequential(
             nn.Conv2d(3, 32, 3, padding=1),  # 32
             nn.BatchNorm2d(32, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.Conv2d(32, 32, 3, padding=1),
             nn.BatchNorm2d(32, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.Conv2d(32, 32, 3, padding=1),
             nn.BatchNorm2d(32, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.MaxPool2d(2, 2),  # 16
             nn.Conv2d(32, 112, 3, padding=1),
             nn.BatchNorm2d(112, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.Conv2d(112, 112, 3, padding=1),
             nn.BatchNorm2d(112, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.MaxPool2d(2, 2),  # 8
             nn.Conv2d(112, 128, 3, padding=1),
             nn.BatchNorm2d(128, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.Conv2d(128, 160, 3, padding=1),
             nn.BatchNorm2d(160, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.MaxPool2d(2, 2),  # 4
             nn.Conv2d(160, 160, 3, padding=1),
             nn.BatchNorm2d(160, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.Flatten(),
             nn.Linear(160 * 4 * 4, 256),
             nn.BatchNorm1d(256, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.Linear(256, 256),
             nn.BatchNorm1d(256, affine=False),
-            nn.Tanh(),
+            nn.ReLU(),
             nn.Linear(256, 100),
         )
 
@@ -237,12 +237,12 @@ class FullyConnected(nn.Module):
         layers.append(nn.Linear(784, self._net_cfg.hidden_dim))
         if net_cfg.use_activations:
             layers.append(nn.BatchNorm1d(self._net_cfg.hidden_dim, affine=False))
-            layers.append(nn.Tanh())
+            layers.append(nn.ReLU())
         for _ in range(net_cfg.num_layers - 2):
             layers.append(nn.Linear(self._net_cfg.hidden_dim, self._net_cfg.hidden_dim))
             if net_cfg.use_activations:
                 layers.append(nn.BatchNorm1d(self._net_cfg.hidden_dim, affine=False))
-                layers.append(nn.Tanh())
+                layers.append(nn.ReLU())
         layers.append(nn.Linear(self._net_cfg.hidden_dim, 10))
         self._layers = nn.Sequential(*layers)
 
