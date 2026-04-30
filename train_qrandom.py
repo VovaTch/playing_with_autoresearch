@@ -192,11 +192,11 @@ class ConvNet(nn.Module):
             nn.BatchNorm2d(32, affine=False),
             nn.LeakyReLU(0.3),
             nn.MaxPool2d(2, 2),  # 16
-            nn.Conv2d(32, 112, 3, padding=1),
-            nn.BatchNorm2d(112, affine=False),
+            nn.Conv2d(32, 128, 3, padding=1),
+            nn.BatchNorm2d(128, affine=False),
             nn.LeakyReLU(0.3),
-            nn.Conv2d(112, 112, 3, padding=1),
-            nn.BatchNorm2d(112, affine=False),
+            nn.Conv2d(128, 128, 3, padding=1),
+            nn.BatchNorm2d(128, affine=False),
             nn.LeakyReLU(0.3),
             nn.MaxPool2d(2, 2),  # 8
             nn.Conv2d(112, 128, 3, padding=1),
