@@ -182,17 +182,17 @@ class ConvNet(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self._layers = nn.Sequential(
-            nn.Conv2d(3, 32, 3, padding=1),  # 32
-            nn.BatchNorm2d(32, affine=False),
+            nn.Conv2d(3, 48, 3, padding=1),  # 32
+            nn.BatchNorm2d(48, affine=False),
             nn.LeakyReLU(0.4),
-            nn.Conv2d(32, 32, 3, padding=1),
-            nn.BatchNorm2d(32, affine=False),
+            nn.Conv2d(48, 48, 3, padding=1),
+            nn.BatchNorm2d(48, affine=False),
             nn.LeakyReLU(0.4),
-            nn.Conv2d(32, 32, 3, padding=1),
-            nn.BatchNorm2d(32, affine=False),
+            nn.Conv2d(48, 48, 3, padding=1),
+            nn.BatchNorm2d(48, affine=False),
             nn.LeakyReLU(0.4),
             nn.MaxPool2d(2, 2),  # 16
-            nn.Conv2d(32, 128, 3, padding=1),
+            nn.Conv2d(48, 128, 3, padding=1),
             nn.BatchNorm2d(128, affine=False),
             nn.LeakyReLU(0.4),
             nn.Conv2d(128, 128, 3, padding=1),
