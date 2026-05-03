@@ -290,7 +290,16 @@ class QRandomClsModule(L.LightningModule):
     def test_step(
         self, batch: tuple[torch.Tensor, torch.Tensor], batch_idx: int
     ) -> STEP_OUTPUT:
-        return self.step(batch, "test")
+        inputs, targets = batch[0], batch[1]
+        logits = self._model(inputs)
+        logits_flip = self._model(torch.flip(inputs, dims=[-1]))
+        avg_logits = (logits + logits_flip) / 2
+        criterion = nn.CrossEntropyLoss()
+        cel_loss = criterion(avg_logits, targets)
+        p_correct = percent_correct(avg_logits, targets)
+        self.log("test/cross_entropy_loss", cel_loss, prog_bar=True, sync_dist=True)
+        self.log("test/percent_correct", p_correct, prog_bar=True, sync_dist=True)
+        return cel_loss
 
     def step(
         self,
