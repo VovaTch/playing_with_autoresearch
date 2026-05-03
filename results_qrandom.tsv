@@ -1,0 +1,116 @@
+commit	percent_correct	memory_gb	status	description
+9906fb9	26.1400	2.5	keep	baseline (CIFAR-100): 3-conv CNN 32/64/64, 2xMaxPool, 4096->256->256->100 FC
+490ea33	25.0200	2.6	discard	deeper CNN 32/64/128/128 + 3xMaxPool — too many params, fewer optimizer steps
+1ad0d3e	23.7300	2.4	discard	3rd MaxPool (4x4 spatial), FC 1024->256->100 — lost too much spatial resolution
+7508a37	22.1600	2.5	discard	random horizontal flip aug — hurts, trinary weights can't adapt to variance
+47976c3	14.7200	2.4	discard	AdaptiveAvgPool2d(2) spatial compression — loses too much info, much worse
+de9c50f	23.0800	2.4	discard	1x1 conv 64->32 compress before flatten — still worse, spatial info lost
+7d077f7	24.7100	2.5	discard	lr=5e-4 — slower flips hurt, 1e-3 is better for CIFAR-100 too
+0397886	26.6800	1.2	keep	batch_size=2048 — 1.87x more steps (+0.54%), also halves VRAM
+6f0d535	27.7500	0.6	keep	batch_size=1024 — 3.5x more steps total, trend continues (+1.07%)
+527f921	25.5000	0.3	discard	batch_size=512 — too noisy per step despite more total steps
+87873e2	27.7000	1.0	discard	wider first conv 3->64 — same result as 1024 baseline, no benefit
+d08bdd7	29.3900	0.6	keep	momentum=0.95 at batch=1024 — more smoothing for noisy 100-class signal, +1.64%
+3a1ebcc	29.8900	0.6	keep	momentum=0.97 — trend continues +0.5%
+07f60d9	31.2200	0.6	keep	momentum=0.99 — heavy smoothing helps 100-class noise, +1.33%
+0c6daa8	15.7100	0.6	discard	momentum=0.999 — extreme over-smoothing, optimizer barely responds within 5 min
+944bf32	31.8500	0.6	keep	lr=2e-3 with momentum=0.99 — more flips per reliable gradient, +0.63%
+cc46513	32.1400	0.6	keep	lr=4e-3 — higher LR with momentum smoothing continues to help, +0.29%
+f6f63d4	31.6600	0.6	discard	lr=8e-3 — too many flips per step, oscillation even with momentum=0.99
+5484127	30.6400	0.6	discard	per-layer lr conv=4e-2 fc=4e-3 — over-flipping conv layers, worse
+38a7cf4	31.4500	0.6	discard	label_smoothing=0.1 — over-softens flip signals, slightly worse
+c1d5f64	31.6700	0.7	discard	BN affine=True — trinary scale/shift destabilizes rather than helps
+b49ff04	30.5200	0.6	discard	momentum=0.995 — worse than 0.99, window too long for 5-min budget
+b03ec41	30.0500	0.6	discard	momentum=0.98 — midpoint 0.97-0.99 is worse, 0.99 remains optimal
+067e1de	23.4000	0.6	discard	AvgPool instead of MaxPool — much worse, MaxPool selectivity needed for trinary
+9585492	33.8400	0.7	keep	wider conv3 64->128 + 3rd MaxPool — more channels+less FC params, +1.70%
+8097f37	32.3400	0.8	discard	conv3=192 channels — diminishing returns, too many FC params (3072→256)
+6edd379	33.8300	0.7	discard	4th conv 128->128 at 4x4 — same as 3-conv, no benefit
+368f017	30.7700	0.7	discard	lr=6e-3 on 3-MaxPool arch — too high, 4e-3 remains optimal
+6c37df9	31.3800	1.4	discard	batch=2048 on 3-MaxPool — too few steps, batch=1024 still optimal
+6db7a85	34.2900	0.8	keep	wider conv2 32->96 — richer intermediate features, +0.45%
+ddac6ec	34.2800	0.9	discard	conv2=128 — same as 96, no additional benefit
+44a00d6	34.0600	0.8	discard	remove 2nd FC layer — slightly worse, 256->256->100 head is needed
+4e5b9bb	33.4100	0.8	discard	5x5 first conv — extra params hurt optimizer coverage, worse
+acb1b94	33.3900	0.8	discard	4 MaxPools (2x2 spatial) — too much spatial compression even with 256 channels
+95c12a8	31.5300	0.8	discard	per-layer momentum conv=0.95 FC=0.99 — worse than uniform 0.99
+b1c4ad0	33.1000	1.0	discard	wider conv1 3->48 — extra params in conv2 hurt optimizer coverage
+0f2c57e	34.7900	1.1	keep	double conv at 32x32 (VGG-style) — richer spatial composition before MaxPool, +0.50%
+2ab2c6d	35.0200	1.3	keep	double conv at 16x16 too — VGG pattern at 2nd stage, +0.23%
+3a82784	37.2300	1.3	keep	double conv at 8x8 too — complete VGG double-conv all stages, +2.21%!
+088f6f9	36.4700	1.4	discard	triple conv at 8x8 — too many params, double is the sweet spot at that stage
+86db682	37.5300	1.5	keep	triple conv at 32x32 — 3rd conv(32,32,3) before first MaxPool, +0.30%
+03e9b86	37.3400	1.7	discard	triple conv at 16x16 — more params hurt coverage, -0.19%
+260d975	37.1400	1.5	discard	cosine LR decay 4e-3->1e-3 — reducing flip count over time hurts, -0.39%
+de5edef	18.6500	1.5	discard	stride-2 conv replace MaxPool — breaks activation normalization, catastrophic
+de7f2a8	28.9700	1.5	discard	GAP head Linear(128,100) — insufficient capacity for 100 classes, -8.56%
+6c80b93	35.5000	2.1	discard	ResBlock skip connections — VRAM spike, gradient interference with trinary weights, -2.03%
+1d7517a	8.7300	1.5	discard	reroll_weights=True — random trinary init destroys smooth gradient landscape, catastrophic
+c939e55	38.0400	1.5	keep	conv at 4x4 before flatten — feature composition at finest spatial level, +0.51%
+958f6d6	36.8600	1.6	discard	double conv at 4x4 — too many params, single is sweet spot like 8x8 stage
+6f40e46	37.4800	1.5	discard	lr=5e-3 — worse than 4e-3, optimal LR unchanged with deeper arch
+d5e6433	38.4300	1.5	keep	wider 4x4 conv 128→160 — more features into classifier, +0.39%
+b3854ec	36.6000	1.6	discard	wider 4x4 conv 160→192 — too many params, 160 is sweet spot
+7a7736a	35.6500	1.5	discard	3rd FC layer 256→256 — too much FC depth, dilutes optimizer coverage
+72cd32d	19.9400	1.5	discard	dropout(0.3) FC — stochastic masking breaks trinary gradient signal, catastrophic
+259c7bb	38.6200	1.6	keep	wider stage-3 conv2 128→160 — uniform channel progression, +0.19%
+6e941ff	38.4400	1.6	discard	stage-3 conv2 160→192 — 160 is sweet spot, 192 overshoots
+0a1cee2	38.1800	1.6	discard	wider stage-3 conv1 96→160 — symmetric stage-3 hurts, asymmetric 96→128→160 is better
+7e2ec1d	36.8600	1.8	discard	4th conv at 32x32 — large activation maps spike VRAM and slow training, net loss
+81582b8	38.8700	1.6	keep	wider stage-2 96→112 — more features at 16x16 stage, +0.25%
+8dc0d61	37.9100	1.7	discard	stage-2 112→128 — 112 is sweet spot, 128 overshoots same as stage-3/4 pattern
+10c072e	37.2500	1.7	discard	asymmetric stage-2 conv2 112→128 — asymmetry doesn't transfer from stage-3
+88e17bd	38.0600	1.9	discard	stage-1 conv3 32→48 — full-res computation costly, VRAM spike like 4th conv
+26c4102	41.1700	1.6	keep	ReLU instead of Tanh everywhere — dramatically better, +2.30%! sparser grads fit trinary weights
+2886483	38.7300	2.3	discard	GELU instead of ReLU — slower (VRAM spike), worse than hard ReLU cutoff
+0a07ba6	44.0200	1.6	keep	LeakyReLU(0.1) — non-zero negative slope doubles gradient signal for ~50% dead ReLU neurons, +2.85%!
+dfabefe	45.4200	1.6	keep	LeakyReLU(0.2) — higher slope, more gradient from negative activations, +1.40%
+69bf1a3	47.1400	1.6	keep	LeakyReLU(0.3) — trend continues, +1.72%
+0ce2bae	46.3000	1.6	discard	LeakyReLU(0.5) — past the sweet spot, 0.3 is optimal
+f225d1e	47.2800	1.8	keep	wider stage-2 96→128 with LeakyReLU — small gain vs discard with Tanh, +0.14%
+f725007	46.5700	1.9	discard	stage-3 symmetric 128->160->160 — asymmetric 128->128->160 is better
+3f4873c	47.9100	2.8	keep	triple conv at 16x16 with LeakyReLU — was discard with Tanh, now +0.63%
+20ccba8	48.0100	2.9	keep	triple conv at 8x8 with LeakyReLU — was discard with Tanh, now +0.10%
+addbdc4	47.0000	2.9	discard	double conv at 4x4 — still bad with LeakyReLU, too many params at fine scale
+01f909f	49.2200	2.9	keep	LeakyReLU(0.4) — optimal slope shifted right with deeper arch, +1.21%!
+390cf21	47.9100	2.9	discard	LeakyReLU(0.5) — past the sweet spot, 0.4 confirmed optimal
+ef9ef06	48.3300	2.9	discard	lr=5e-3 — too many flips with LeakyReLU(0.4), 4e-3 remains optimal
+b0dc41d	48.0400	3.0	discard	wider stage-4 conv 160->192 — 4x4 stage can't absorb more channels, -1.18%
+53a5301	48.7500	3.0	discard	wider FC head 256->512 — more FC params don't help, 256 is sufficient
+8e9c23b	49.1700	3.0	discard	uniform stage-3 at 160ch 128->160->160->160 — marginal, asymmetric 128->128->160 is better
+09ecf5d	48.7200	1.5	discard	batch_size=512 — still too noisy with current arch, 1024 remains optimal
+ebd445c	46.9200	3.0	discard	optimizer momentum=0.97 — much worse, 0.99 confirmed optimal even with LeakyReLU(0.4)
+77307af	49.3900	3.5	keep	wider stage-1 to 48ch — was discard with Tanh, now +0.17% with LeakyReLU(0.4)
+4869907	48.1800	4.1	discard	stage-1 to 64ch — too many full-res params, VRAM spike +0.6GB, worse accuracy
+721d32e	49.1800	3.0	discard	2 convs at stage-1 48ch — 3rd full-res conv is needed, removal costs -0.21%
+fefee93	47.7900	3.7	discard	stage-2 128->160 + uniform stage-3 160 — VRAM spike, channel reshuffling hurts, -1.60%
+8f562af	46.1500	3.5	discard	label_smoothing=0.1 — softened targets kill flip signal sharpness, -3.24%
+be6291f	37.0700	6.9	discard	batch=2048 — catastrophic, far fewer steps + VRAM doubles to 7.1GB
+54e9861	18.5700	3.5	discard	min_prob=1e-3 — random flips destroy signal, catastrophic
+98e05a6	47.8600	3.2	discard	gradual stage-2 expansion 48->64->96->128 — fewer params but less channel capacity, worse
+85a0af1	47.3700	3.5	discard	focal loss (gamma=2) — down-weights easy examples but hurts like label smoothing
+8374352	38.0600	3.5	discard	SiLU (Swish) activation — non-linear negative region kills trinary gradient signal, catastrophic
+3873599	49.3400	3.7	discard	4th conv at 8x8 — marginal -0.05% with extra params, triple-conv sweet spot confirmed
+626f7ce	45.3100	4.6	discard	1x1 conv before each MaxPool — extra channel-mixing params hurt, -4.08% and +1.1GB VRAM
+9327772	47.7500	2.0	discard	mixed precision 16-mixed — VRAM halves but trinary signal degrades, -1.64%
+d3253bf	48.5200	3.5	discard	gradient_clip_val=1.0 — interferes with magnitude-based top-k flip selection, -0.87%
+3e669fe	47.8500	3.6	discard	dilated conv at stage-3 conv2 — bigger receptive field hurts at 8x8, -1.54%
+d9e04a2	47.8700	3.5	discard	lr=3e-3 — too few flips with this arch, 4e-3 confirmed optimal
+7eecd63	47.9600	3.6	discard	overlapping MaxPool(3,2) at stage-1 — overlap doesn't help, -1.43%
+411cc9d	46.4300	3.5	discard	scale flip prob to [0,0.5] — too few flips per step, -2.96%
+9dfa2e8	47.5200	3.7	discard	pre-conv 3->16->48 at full res — extra full-res conv slows training, -1.87%
+88bb995	43.1300	3.5	discard	swap to Conv->Act->BN — -6.26%, BN-before-act ordering is critical for trinary
+1cc9e0a	47.8900	3.5	discard	LeakyReLU(0.35) — between 0.3 and 0.4 still worse, 0.4 confirmed local optimum
+fdb026f	48.7200	3.5	discard	seed_everything(42) — sync DDP RNG, slight loss vs unseeded, divergence is ~regularizer
+a1b9c6d	48.9200	3.5	discard	remove middle FC layer — middle 256->256 still needed even with current arch, -0.47%
+4a6f294	48.3600	3.6	discard	smoother stage-3 128->144->160->160 — gradual growth doesn't help, -1.03%
+c645078	46.8200	3.5	discard	top_k floor=32 — over-flips small layers (first conv jumps from 5 to 32), -2.57%
+27c5f4e	46.8800	3.5	discard	narrower FC head 192 hidden — too narrow, -2.51%, 256 stays optimal
+d283647	45.8600	3.5	discard	LeakyReLU(0.42) — fine grain past 0.4 hurts, -3.53% (likely run variance)
+ebcbd0a	49.7300	3.6	keep	TTA at test (orig + horizontal flip avg) — +0.34%, free win at test time
+5fb4978	39.9500	3.6	discard	4-way TTA (h+v+rot180) — vertical flips are unnatural for natural images, -9.78%
+278567b	49.6700	3.6	discard	10-way TTA (5 crops + hflip) — model not trained for shifts, no benefit, -0.06%
+44295e5	48.9000	3.5	discard	noise TTA (sigma=0.05) — perturbations push past trinary tolerance, -0.83%
+5346e81	49.3100	3.5	discard	3-way TTA (orig+hflip+1px-shift) — shift hurts, model not shift-invariant, -0.42%
+2071cc7	48.3000	3.5	discard	TTA softmax averaging — non-linear pooling slightly worse than logit avg, -1.43%
+1bb27f1	52.5300	3.5	keep	limit_val_batches=0 — skip validation, more training in 5min budget, +2.80%!

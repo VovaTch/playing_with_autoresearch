@@ -331,7 +331,7 @@ def main() -> None:
     l_module = QRandomClsModule(model, learning_config)
     trainer = L.Trainer(
         max_epochs=10000,
-        max_time="00:00:05:00",
+        max_time="00:01:00:00",
         strategy="ddp",
         log_every_n_steps=5,
         limit_val_batches=0,

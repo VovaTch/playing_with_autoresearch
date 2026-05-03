@@ -1,0 +1,41 @@
+commit	percent_correct	memory_gb	status	description
+98b1fe1	68.0900	0.0	keep	baseline: linear model (no activations), 50 epochs
+64aab91	23.2700	0.0	discard	ReLU activations (bug fixed) + 5-min budget — dying neurons kill BinaryRandom optimizer
+811dc1b	64.5000	0.0	discard	5-min budget only (linear model) — more training causes oscillation and degrades
+b886ec1	67.9000	0.0	discard	lr 0.01 (linear model) — same plateau as baseline, not enough capacity gain
+b2d7e18	51.3400	0.0	discard	tanh activation — saturates as weights reach ±1, gradients vanish
+5505b98	69.1900	0.0	keep	tanh + BatchNorm1d(affine=False) — BN prevents saturation, small improvement
+2f8f670	74.9800	0.0	keep	add 5-min time budget — more training with BN+tanh significantly helps
+bfc5739	75.3900	0.0	keep	fix optimizer zero-flips bug — output layer now actually trains
+0aa3e6e	89.5100	0.0	keep	hidden_dim 64 — massive improvement, more capacity helps greatly
+0199f93	90.2900	0.0	keep	hidden_dim 128 — marginal gain, trend still positive
+5fabcf8	90.7100	0.0	keep	hidden_dim 256 — diminishing returns on width, +0.4%
+0988fe5	89.7400	0.0	discard	num_layers=3 — fewer layers hurt, BN+5-layer depth was better
+e13dcef	90.3400	0.0	discard	reroll_weights=True — trinary init worse than continuous kaiming
+bf0e40e	91.6200	0.0	keep	max flip prob 1.0 — deterministic flip of top-k is better than stochastic
+44c8250	91.0200	0.0	discard	lr=0.005 — more flips per step causes oscillation
+1eca6db	91.8000	0.0	keep	num_layers=7 — small gain, more depth continues to help
+9a52c58	92.9300	0.0	keep	min_prob=0.0 — no random non-top-k flips, big win from pure gradient signal
+8ef2cea	93.7500	0.1	keep	batch_size=4096 — larger batches improve gradient reliability for flip decisions
+159af18	86.6200	0.3	discard	batch_size=16384 — too few optimizer steps, hurts convergence
+69fb9f6	92.8500	0.2	discard	batch_size=8192 — still worse than 4096, sweet spot confirmed at 4096
+aa0f040	93.7500	0.1	discard	num_layers=9 — same as 7, depth plateaued (7 layers simpler)
+39f8847	90.1200	0.1	discard	residual connections — BN instability with near-zero init + skip hurts
+e18a0f2	95.3700	0.9	keep	CNN (16→32 conv + 128 FC) — spatial structure exploitation huge win
+b94dd96	95.4600	1.9	keep	wider CNN 32/64 channels — marginal +0.09%, small improvement
+1f6d1e1	97.1300	1.9	keep	third conv layer (64→64, no pool) — huge +1.67% gain
+364e515	97.0500	1.9	discard	fourth conv layer — slightly worse, 3 conv is optimal
+dc64f47	97.4700	1.9	keep	wider FC head 256 — +0.34% gain
+2f32dae	96.3900	1.9	discard	FC head 512 — too many params for 5-min budget, worse
+a916899	97.6200	1.9	keep	second FC layer 256→256→10 — small gain +0.15%
+83f5be8	96.8800	1.9	discard	third FC hidden layer 256→256→256→10 — too many params for budget
+ace00af	95.5800	1.9	discard	random 2-pixel shift augmentation — hurts, trinary weights can't adapt to variance
+7816ff8	97.3600	1.9	discard	lr=2e-3 — causes oscillation, lr=1e-3 is the sweet spot
+644e0bf	99.0100	1.9	keep	EMA momentum=0.9 on gradients — huge +1.39% by smoothing noisy flip decisions
+320d0fd	98.9700	1.9	discard	momentum=0.95 — slightly worse, 0.9 is better
+8069a83	98.9000	1.9	discard	third FC layer with momentum — still hurts even with better optimizer
+788629a	99.0000	1.9	discard	lr=2e-3 with momentum — effectively same as 1e-3, no gain
+86af9ca	98.8800	2.0	discard	4th conv block with momentum — still worse, 3 conv is optimal
+bde7d11	98.7800	3.8	discard	batch_size=8192 with momentum — still worse, 4096 remains optimal
+ed4b7ce	98.8600	1.9	discard	cosine annealing LR schedule — lr decays too fast, hurts late training
+e849f29	98.8100	1.9	discard	bottleneck FC head 3136→64→256→10 — loses spatial info, worse
