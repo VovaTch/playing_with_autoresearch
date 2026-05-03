@@ -115,7 +115,7 @@ class BinaryRandom(Optimizer):
         # Convert all parameters into the correct values
         for group in self.param_groups:
             for p in group["params"]:
-                p.data = map_to_closest(torch.randn_like(p.data), value_list).float()
+                p.data = map_to_closest(torch.randn_like(p.data) * 0.5, value_list).float()
 
     def __setstate__(self, state: dict[str, Any]) -> None:
         return super().__setstate__(state)
