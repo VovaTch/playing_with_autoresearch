@@ -334,6 +334,7 @@ def main() -> None:
         max_time="00:00:05:00",
         strategy="ddp",
         log_every_n_steps=5,
+        limit_val_batches=0,
     )
     trainer.fit(l_module, data_module)
     results = trainer.test(l_module, data_module)
