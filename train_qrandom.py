@@ -335,6 +335,7 @@ def main() -> None:
         strategy="ddp",
         log_every_n_steps=5,
         limit_val_batches=0,
+        benchmark=True,
     )
     trainer.fit(l_module, data_module)
     results = trainer.test(l_module, data_module)
