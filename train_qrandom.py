@@ -1,4 +1,5 @@
 import warnings
+from collections import Counter
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Literal
 
@@ -28,7 +29,6 @@ class LearningConfig:
     batch_size: int = 1024
     flip_factor: float = 0.1
     min_prob: float = 0.0
-    reroll_weights: bool = False
     num_workers: int = 11
 
 
@@ -99,7 +99,6 @@ class BinaryRandom(Optimizer):
         max_value: int,
         step_size: int,
         lr=required,
-        reroll_weights: bool = False,
         min_prob: float = 1e-4,
         flip_factor: float = 0.1,
     ) -> None:
@@ -114,12 +113,9 @@ class BinaryRandom(Optimizer):
         value_list = torch.arange(-max_value, max_value + 1, step_size).tolist()
 
         # Convert all parameters into the correct values
-        if reroll_weights:
-            for group in self.param_groups:
-                for p in group["params"]:
-                    p.data = map_to_closest(
-                        torch.randn_like(p.data), value_list
-                    ).float()
+        for group in self.param_groups:
+            for p in group["params"]:
+                p.data = map_to_closest(torch.randn_like(p.data), value_list).float()
 
     def __setstate__(self, state: dict[str, Any]) -> None:
         return super().__setstate__(state)
@@ -268,7 +264,6 @@ class QRandomClsModule(L.LightningModule):
             max_value=1,
             step_size=1,
             lr=self._learn_cfg.learning_rate,
-            reroll_weights=self._learn_cfg.reroll_weights,
             min_prob=self._learn_cfg.min_prob,
             flip_factor=self._learn_cfg.flip_factor,
         )
@@ -331,7 +326,7 @@ def main() -> None:
     l_module = QRandomClsModule(model, learning_config)
     trainer = L.Trainer(
         max_epochs=10000,
-        max_time="00:01:00:00",
+        max_time="00:00:05:00",
         strategy="ddp",
         log_every_n_steps=5,
         limit_val_batches=0,
@@ -344,6 +339,32 @@ def main() -> None:
         print(f"percent_correct: {pct:.4f}")
         peak_vram_mb = torch.cuda.max_memory_allocated() / (1024 * 1024)
         print(f"peak_vram_mb: {peak_vram_mb:.1f}")
+        report_param_histogram(model)
+
+
+def report_param_histogram(model: nn.Module) -> None:
+    weight_counter: Counter[float] = Counter()
+    bias_counter: Counter[float] = Counter()
+    for name, param in model.named_parameters():
+        unique, counts = torch.unique(param.data, return_counts=True)
+        target = bias_counter if name.endswith("bias") else weight_counter
+        for v, c in zip(unique.tolist(), counts.tolist()):
+            target[v] += c
+
+    ternary = {-1.0, 0.0, 1.0}
+    ternary_w = {v: weight_counter.get(v, 0) for v in sorted(ternary)}
+    ternary_b = {v: bias_counter.get(v, 0) for v in sorted(ternary)}
+    non_ternary_w_count = sum(c for v, c in weight_counter.items() if v not in ternary)
+    non_ternary_b_count = sum(c for v, c in bias_counter.items() if v not in ternary)
+
+    print("\nTernary weight counts:")
+    for v in sorted(ternary_w.keys()):
+        print(f"  {v:+.1f}: {ternary_w[v]}")
+    print("Ternary bias counts:")
+    for v in sorted(ternary_b.keys()):
+        print(f"  {v:+.1f}: {ternary_b[v]}")
+    print(f"Non-ternary weights: {non_ternary_w_count}")
+    print(f"Non-ternary biases: {non_ternary_b_count}")
 
 
 if __name__ == "__main__":
