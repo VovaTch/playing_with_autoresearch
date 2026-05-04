@@ -26,7 +26,7 @@ class NetConfig:
 class LearningConfig:
     learning_rate: float = 6.4e-2
     epochs: int = 50
-    batch_size: int = 1024
+    batch_size: int = 2048
     flip_factor: float = 0.1
     min_prob: float = 1e-3
     num_workers: int = 11
@@ -328,7 +328,7 @@ def main() -> None:
     trainer = L.Trainer(
         max_epochs=10000,
         max_time="00:00:05:00",
-        strategy="ddp",
+        devices=1,
         log_every_n_steps=5,
         limit_val_batches=0,
         benchmark=True,
