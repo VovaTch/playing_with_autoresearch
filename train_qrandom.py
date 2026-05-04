@@ -287,14 +287,9 @@ class QRandomClsModule(L.LightningModule):
         self, batch: tuple[torch.Tensor, torch.Tensor], batch_idx: int
     ) -> STEP_OUTPUT:
         inputs, targets = batch[0], batch[1]
-        flipped = torch.flip(inputs, dims=[-1])
-        shifted = torch.roll(inputs, shifts=(1, 1), dims=(-2, -1))
-        flip_shift = torch.roll(flipped, shifts=(1, 1), dims=(-2, -1))
         logits = self._model(inputs)
-        logits_flip = self._model(flipped)
-        logits_shift = self._model(shifted)
-        logits_flip_shift = self._model(flip_shift)
-        avg_logits = (logits + logits_flip + logits_shift + logits_flip_shift) / 4
+        logits_flip = self._model(torch.flip(inputs, dims=[-1]))
+        avg_logits = (logits + logits_flip) / 2
         criterion = nn.CrossEntropyLoss()
         cel_loss = criterion(avg_logits, targets)
         p_correct = percent_correct(avg_logits, targets)
