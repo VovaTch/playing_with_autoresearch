@@ -195,9 +195,6 @@ class ConvNet(nn.Module):
             nn.Conv2d(128, 128, 3, padding=1),
             nn.BatchNorm2d(128, affine=False),
             nn.LeakyReLU(0.4),
-            nn.Conv2d(128, 128, 3, padding=1),
-            nn.BatchNorm2d(128, affine=False),
-            nn.LeakyReLU(0.4),
             nn.MaxPool2d(2, 2),  # 8
             nn.Conv2d(128, 128, 3, padding=1),
             nn.BatchNorm2d(128, affine=False),
