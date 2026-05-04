@@ -324,6 +324,7 @@ def main() -> None:
         batch_size=learning_config.batch_size, num_workers=learning_config.num_workers
     )
     model = ConvNet()
+    model = torch.compile(model)
     l_module = QRandomClsModule(model, learning_config)
     trainer = L.Trainer(
         max_epochs=10000,
