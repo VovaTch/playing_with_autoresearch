@@ -1,6 +1,6 @@
 # autoresearch
 
-This is an experiment to have the LLM do its own research.
+This is an experiment to have the LLM do its own research. Use the caveman-full skill if available.
 
 ## Setup
 
@@ -100,7 +100,7 @@ LOOP FOREVER:
 8. If percent_correct improved (higher), you "advance" the branch, keeping the git commit
 9. If percent_correct is equal or worse, you git reset back to where you started
 
-The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever).
+The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever). Refrain from using Test-Time-Augmentations as much as possible, as the goal is to find the best architecture for ternary weights and modify the training parameters and approaches to still get the best results with ternary weights.
 
 **Timeout**: Each experiment should take ~5 minutes total (+ a few seconds for startup and eval overhead). If a run exceeds 10 minutes, kill it and treat it as a failure (discard and revert).
 

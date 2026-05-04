@@ -57,3 +57,4 @@ d5cc95d	44.1500	5.1	discard	Exp49: 4-pass TTA — tied with 2-pass, simpler is b
 c69a1c3	40.0300	5.1	discard	Exp55: AvgPool at last reduction — much worse than MaxPool
 ea7c25e	38.8500	5.1	discard	Exp56: deeper FC head 256->256->384->100 — too many params for budget
 d0d8741	40.5900	5.1	discard	Exp57: gradient_clip_val=1.0 — clipping hurts ternary EMA buffer
+d272ccf	46.3900	5.9	discard	Exp74: 4-pass TTA zero-padded shifts — within noise, simpler 2-pass kept
