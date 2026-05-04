@@ -276,7 +276,12 @@ class QRandomClsModule(L.LightningModule):
     def training_step(
         self, batch: tuple[torch.Tensor, torch.Tensor], batch_idx: int
     ) -> STEP_OUTPUT:
-        return self.step(batch, "train")
+        inputs, targets = batch[0], batch[1]
+        flip_mask = torch.rand(inputs.size(0), device=inputs.device) < 0.5
+        if flip_mask.any():
+            inputs = inputs.clone()
+            inputs[flip_mask] = torch.flip(inputs[flip_mask], dims=[-1])
+        return self.step((inputs, targets), "train")
 
     def validation_step(
         self, batch: tuple[torch.Tensor, torch.Tensor], batch_idx: int
