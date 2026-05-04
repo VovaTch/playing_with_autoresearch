@@ -332,6 +332,7 @@ def main() -> None:
         log_every_n_steps=5,
         limit_val_batches=0,
         benchmark=True,
+        precision="16-mixed",
     )
     trainer.fit(l_module, data_module)
     results = trainer.test(l_module, data_module)
