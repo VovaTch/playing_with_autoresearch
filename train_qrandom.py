@@ -115,7 +115,9 @@ class BinaryRandom(Optimizer):
         # Convert all parameters into the correct values
         for group in self.param_groups:
             for p in group["params"]:
-                p.data = map_to_closest(torch.randn_like(p.data) * 0.7, value_list).float()
+                p.data = map_to_closest(
+                    torch.randn_like(p.data) * 0.7, value_list
+                ).float()
 
     def __setstate__(self, state: dict[str, Any]) -> None:
         return super().__setstate__(state)
@@ -285,9 +287,14 @@ class QRandomClsModule(L.LightningModule):
         self, batch: tuple[torch.Tensor, torch.Tensor], batch_idx: int
     ) -> STEP_OUTPUT:
         inputs, targets = batch[0], batch[1]
+        flipped = torch.flip(inputs, dims=[-1])
+        shifted = torch.roll(inputs, shifts=(1, 1), dims=(-2, -1))
+        flip_shift = torch.roll(flipped, shifts=(1, 1), dims=(-2, -1))
         logits = self._model(inputs)
-        logits_flip = self._model(torch.flip(inputs, dims=[-1]))
-        avg_logits = (logits + logits_flip) / 2
+        logits_flip = self._model(flipped)
+        logits_shift = self._model(shifted)
+        logits_flip_shift = self._model(flip_shift)
+        avg_logits = (logits + logits_flip + logits_shift + logits_flip_shift) / 4
         criterion = nn.CrossEntropyLoss()
         cel_loss = criterion(avg_logits, targets)
         p_correct = percent_correct(avg_logits, targets)
@@ -325,7 +332,7 @@ def main() -> None:
     l_module = QRandomClsModule(model, learning_config)
     trainer = L.Trainer(
         max_epochs=10000,
-        max_time="00:00:05:00",
+        max_time="00:00:30:00",
         strategy="ddp",
         log_every_n_steps=5,
         limit_val_batches=0,
