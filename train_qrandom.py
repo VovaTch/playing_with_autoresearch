@@ -216,9 +216,6 @@ class ConvNet(nn.Module):
             nn.Linear(160 * 4 * 4, 256),
             nn.BatchNorm1d(256, affine=False),
             nn.LeakyReLU(0.4),
-            nn.Linear(256, 256),
-            nn.BatchNorm1d(256, affine=False),
-            nn.LeakyReLU(0.4),
             nn.Linear(256, 100),
         )
 
