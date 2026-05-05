@@ -1,4 +1,5 @@
 import warnings
+import argparse
 from collections import Counter
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Literal
@@ -316,7 +317,7 @@ class QRandomClsModule(L.LightningModule):
         return cel_loss
 
 
-def main() -> None:
+def main(args: argparse.Namespace) -> None:
     learning_config = LearningConfig()
     net_config = NetConfig()
     data_module = Cifar100Module(
@@ -325,9 +326,15 @@ def main() -> None:
     model = ConvNet()
     model = torch.compile(model)
     l_module = QRandomClsModule(model, learning_config)
+
+    minutes = args.training_time % 60
+    hours = (args.training_time // 60) % 24
+    days = hours // 24
+    time_str = f"{str(days).zfill(2)}:{str(hours).zfill(2)}:{str(minutes).zfill(2)}:00"
+
     trainer = L.Trainer(
         max_epochs=10000,
-        max_time="00:00:05:00",
+        max_time=time_str,
         devices=1,
         log_every_n_steps=5,
         limit_val_batches=0,
@@ -370,4 +377,9 @@ def report_param_histogram(model: nn.Module) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Training qrandom")
+    parser.add_argument(
+        "-t", "--training_time", type=int, default=5, help="Training time in minutes"
+    )
+    args = parser.parse_args()
+    main(args)
