@@ -29,7 +29,7 @@ class LearningConfig:
     batch_size: int = 1024
     flip_factor: float = 0.1
     min_prob: float = 1e-3
-    num_workers: int = 11
+    num_workers: int = 4
 
 
 def map_to_closest(tensor: torch.Tensor, values: list[float]) -> torch.Tensor:
