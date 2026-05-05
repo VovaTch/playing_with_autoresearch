@@ -179,38 +179,38 @@ class ConvNet(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self._layers = nn.Sequential(
-            nn.Conv2d(3, 48, 3, padding=1),  # 32
+            nn.Conv2d(3, 48, 3, padding=1, bias=False),  # 32
             nn.BatchNorm2d(48, affine=False),
             nn.LeakyReLU(0.4),
-            nn.Conv2d(48, 48, 3, padding=1),
+            nn.Conv2d(48, 48, 3, padding=1, bias=False),
             nn.BatchNorm2d(48, affine=False),
             nn.LeakyReLU(0.4),
-            nn.Conv2d(48, 48, 3, padding=1),
+            nn.Conv2d(48, 48, 3, padding=1, bias=False),
             nn.BatchNorm2d(48, affine=False),
             nn.LeakyReLU(0.4),
             nn.MaxPool2d(2, 2),  # 16
-            nn.Conv2d(48, 128, 3, padding=1),
+            nn.Conv2d(48, 128, 3, padding=1, bias=False),
             nn.BatchNorm2d(128, affine=False),
             nn.LeakyReLU(0.4),
-            nn.Conv2d(128, 128, 3, padding=1),
+            nn.Conv2d(128, 128, 3, padding=1, bias=False),
             nn.BatchNorm2d(128, affine=False),
             nn.LeakyReLU(0.4),
             nn.MaxPool2d(2, 2),  # 8
-            nn.Conv2d(128, 128, 3, padding=1),
+            nn.Conv2d(128, 128, 3, padding=1, bias=False),
             nn.BatchNorm2d(128, affine=False),
             nn.LeakyReLU(0.4),
-            nn.Conv2d(128, 128, 3, padding=1),
+            nn.Conv2d(128, 128, 3, padding=1, bias=False),
             nn.BatchNorm2d(128, affine=False),
             nn.LeakyReLU(0.4),
-            nn.Conv2d(128, 160, 3, padding=1),
+            nn.Conv2d(128, 160, 3, padding=1, bias=False),
             nn.BatchNorm2d(160, affine=False),
             nn.LeakyReLU(0.4),
             nn.MaxPool2d(2, 2),  # 4
-            nn.Conv2d(160, 160, 3, padding=1),
+            nn.Conv2d(160, 160, 3, padding=1, bias=False),
             nn.BatchNorm2d(160, affine=False),
             nn.LeakyReLU(0.4),
             nn.Flatten(),
-            nn.Linear(160 * 4 * 4, 256),
+            nn.Linear(160 * 4 * 4, 256, bias=False),
             nn.BatchNorm1d(256, affine=False),
             nn.LeakyReLU(0.4),
             nn.Linear(256, 100),
