@@ -21,6 +21,9 @@ dev/
 
 # Results file
 results.tsv
+results_qrandom.tsv
+results_mnist_qrandom.tsv
+run.log
 
 # Results & data
 lightning_logs/
