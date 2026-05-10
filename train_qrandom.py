@@ -137,7 +137,7 @@ class BinaryRandom(Optimizer):
                 state = self.state[p]
                 if "momentum_buf" not in state:
                     state["momentum_buf"] = torch.zeros_like(d_p)
-                state["momentum_buf"].mul_(0.97).add_(d_p, alpha=0.03)
+                state["momentum_buf"].mul_(0.96).add_(d_p, alpha=0.04)
                 d_p = state["momentum_buf"]
 
                 top_k_p = max(1, int(group["lr"] * p.data.numel()))
