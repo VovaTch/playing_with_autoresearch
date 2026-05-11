@@ -252,7 +252,7 @@ class QRandomClsModule(L.LightningModule):
         self._learn_cfg = learning_config
 
     def configure_optimizers(self) -> OptimizerLRScheduler:
-        return BinaryRandom(
+        opt = BinaryRandom(
             self._model.parameters(),
             max_value=1,
             step_size=1,
@@ -260,6 +260,10 @@ class QRandomClsModule(L.LightningModule):
             min_prob=self._learn_cfg.min_prob,
             flip_factor=self._learn_cfg.flip_factor,
         )
+        sched = torch.optim.lr_scheduler.LinearLR(
+            opt, start_factor=0.5, end_factor=1.0, total_iters=500
+        )
+        return {"optimizer": opt, "lr_scheduler": {"scheduler": sched, "interval": "step"}}
 
     def forward(self, x: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
         outputs = self._model(x["inputs"])
