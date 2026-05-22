@@ -23,7 +23,7 @@ Each experiment runs on the available GPUs in the machine, through Pytorch-Light
 
 **What you CAN do:**
 
-- Modify `train_qrandom.py` — this is the only file you edit. Keep the model architecture around the ballpark of number of parameters, but the rest can be played with. The optimizer suppose to have trinary weights, but outside of that it is open for modifications. The hyperparameters, training loop, batch size is fair-game. Try to be creative but keep it around the ballpark of the trinary weights.
+- Modify `train_qrandom.py` — this is the only file you edit. Keep the model architecture around the ballpark of number of parameters, but the rest can be played with. The optimizer suppose to have trinary weights, but outside of that it is open for modifications. The hyperparameters, training loop, batch size is fair-game. Try to be creative but keep it around the ballpark of the trinary weights. If memory and speed permits, run multiple training runs concurrently, keep in mind that too many processes slows the GPUs even if we don't run out of memory.
 
 **What you CANNOT do:**
 
@@ -99,6 +99,7 @@ LOOP FOREVER:
 7. Record the results in the tsv (NOTE: do not commit the results.tsv file, leave it untracked by git)
 8. If percent_correct improved (higher), you "advance" the branch, keeping the git commit
 9. If percent_correct is equal or worse, you git reset back to where you started
+10. Count the number of steps and epochs performed.
 
 The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever). Refrain from using Test-Time-Augmentations as much as possible, as the goal is to find the best architecture for ternary weights and modify the training parameters and approaches to still get the best results with ternary weights.
 
